@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Loading extends StatefulWidget {
   const Loading({Key? key}) : super(key: key);
@@ -18,12 +17,12 @@ class _LoadingState extends State<Loading> {
           child: Container(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 CircularProgressIndicator(
-                  color: Colors.red,
+                  color: Colors.blue.shade900,
                 ),
-                SizedBox(width: 10),
-                Text("Loading...",
+                const SizedBox(width: 10),
+                const Text("Loading...",
                     style: TextStyle(
                         fontSize: 12.0,
                         color: Colors.blueGrey,

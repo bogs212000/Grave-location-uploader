@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:grapp_mapping/UI/MyHomePage.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:grapp_mapping/UI/lock.screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,12 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const MyHomepage());
+        initialRoute: '/',
+        routes: {
+          '/home': (context) => MyHomepage(),
+          // Define the '/' route with LockScreen as the widget
+          // You can define other routes here if needed
+        },
+        home: LockScreen());
   }
 }

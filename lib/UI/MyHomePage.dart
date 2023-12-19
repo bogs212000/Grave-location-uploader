@@ -14,6 +14,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 TextEditingController fullname = new TextEditingController();
+TextEditingController fname = new TextEditingController();
+TextEditingController mname = new TextEditingController();
+TextEditingController lname = new TextEditingController();
 TextEditingController birth = new TextEditingController();
 TextEditingController death = new TextEditingController();
 TextEditingController location = new TextEditingController();
@@ -22,8 +25,9 @@ bool loading = false;
 
 class MyHomepage extends StatefulWidget {
   static String id = "MyHomePage";
+  Completer<GoogleMapController> _controller = Completer();
 
-  const MyHomepage({super.key});
+  MyHomepage({super.key});
 
   @override
   State<MyHomepage> createState() => _MyHomepageState();
@@ -45,7 +49,7 @@ class _MyHomepageState extends State<MyHomepage> {
   final Completer<GoogleMapController> _controller = Completer();
   String date = "";
   DateTime selectedDate = DateTime.now();
-  List<Marker> _marker = <Marker>[];
+  Set<Marker> _marker = {};
 
   @override
   void initState() {
@@ -148,44 +152,40 @@ class _MyHomepageState extends State<MyHomepage> {
   }
 
   getLocation() async {
-    position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
-    print(position.longitude); //Output: 80.24599079
-    print(position.latitude); //Output: 29.6593457
+    try {
+      position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best,
+      );
 
-    long = position.longitude as double;
-    lat = position.latitude as double;
-    setState(() {
-      location.text = "$lat, $long";
-      address = "$lat, $long";
-      loading = false;
-      _marker.add(Marker(
-          markerId: MarkerId(""),
-          position: LatLng(lat, long),
-          infoWindow: InfoWindow(title: "$address")));
-    });
-    setState(() {
-      //refresh UI
-    });
+      print(position.longitude);
+      print(position.latitude);
 
-    LocationSettings locationSettings = const LocationSettings(
-      accuracy: LocationAccuracy.best, //accuracy of the location data
-      distanceFilter: 50, //minimum distance (measured in meters) a
-      //device must move horizontally before an update event is generated;
-    );
+      long = position.longitude;
+      lat = position.latitude;
 
-    StreamSubscription<Position> positionStream =
-        Geolocator.getPositionStream(locationSettings: locationSettings)
-            .listen((Position position) {
-      print(position.longitude); //Output: 80.24599079
-      print(position.latitude); //Output: 29.6593457
+      setState(() {
+        location.text = "$lat, $long";
+        address = "$lat, $long";
 
-      long = position.longitude as double;
-      lat = position.latitude as double;
-      lat as double;
-      long as double;
-    });
-    Navigator.of(context, rootNavigator: true).pop();
+        // Clear existing markers and add a new one
+        _marker = {
+          Marker(
+            markerId: MarkerId("myMarkerId"), // Use a specific marker ID
+            position: LatLng(lat, long),
+            infoWindow: InfoWindow(title: "$address"),
+          ),
+        };
+        loading = false;
+      });
+
+      Navigator.of(context, rootNavigator: true).pop();
+      setState(() {
+        loading = false;
+      });
+    } catch (e) {
+      print("Error getting location: $e");
+      // Handle errors if any
+    }
   }
 
   showAlertDialog1(BuildContext context) {
@@ -266,7 +266,7 @@ class _MyHomepageState extends State<MyHomepage> {
   @override
   Widget build(BuildContext context) {
     return loading
-        ? Loading()
+        ? const Loading()
         : Scaffold(
             body: Container(
               decoration:
@@ -281,7 +281,8 @@ class _MyHomepageState extends State<MyHomepage> {
                     const SizedBox(height: 40),
                     Row(
                       children: [
-                        Image.asset('assets/img.png', scale: 3),
+                        Image.asset('assets/cemetery.png',
+                            scale: 5, color: Colors.white),
                         const Text('  Grave Mapping Uploader',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -299,7 +300,7 @@ class _MyHomepageState extends State<MyHomepage> {
                       child: Column(
                         children: [
                           TextField(
-                            controller: fullname,
+                            controller: fname,
                             keyboardType: TextInputType.emailAddress,
                             style: const TextStyle(
                                 fontSize: 14.0,
@@ -319,9 +320,69 @@ class _MyHomepageState extends State<MyHomepage> {
                                   color: Colors.black,
                                   letterSpacing: .5,
                                   fontWeight: FontWeight.w400),
-                              labelText: "Full name",
+                              labelText: "First name",
                               prefixIcon: const Icon(Icons.person_2_outlined,
                                   color: Colors.black),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                      color:
+                                          Color.fromARGB(255, 219, 219, 219)),
+                                  borderRadius: BorderRadius.circular(20.0)),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          TextField(
+                            controller: mname,
+                            keyboardType: TextInputType.emailAddress,
+                            style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black,
+                                letterSpacing: .5,
+                                fontWeight: FontWeight.w400),
+                            decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: const BorderSide(
+                                      color:
+                                          Color.fromARGB(255, 219, 219, 219))),
+                              filled: true,
+                              fillColor: Colors.white,
+                              labelStyle: const TextStyle(
+                                  fontSize: 13.0,
+                                  color: Colors.black,
+                                  letterSpacing: .5,
+                                  fontWeight: FontWeight.w400),
+                              labelText: "Middle name(optional)",
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                      color:
+                                          Color.fromARGB(255, 219, 219, 219)),
+                                  borderRadius: BorderRadius.circular(20.0)),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          TextField(
+                            controller: lname,
+                            keyboardType: TextInputType.emailAddress,
+                            style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black,
+                                letterSpacing: .5,
+                                fontWeight: FontWeight.w400),
+                            decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: const BorderSide(
+                                      color:
+                                          Color.fromARGB(255, 219, 219, 219))),
+                              filled: true,
+                              fillColor: Colors.white,
+                              labelStyle: const TextStyle(
+                                  fontSize: 13.0,
+                                  color: Colors.black,
+                                  letterSpacing: .5,
+                                  fontWeight: FontWeight.w400),
+                              labelText: "Last name",
                               enabledBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(
                                       color:
@@ -543,23 +604,24 @@ class _MyHomepageState extends State<MyHomepage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () async {
-                          if (fullname.text == "" ||
+                          if (lname.text == "" ||
+                              fname.text == "" ||
                               birth.text == "" ||
                               death.text == "" ||
                               location.text == "" ||
                               _image == null ||
                               lat == 0.0 ||
                               long == 0.0) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                               backgroundColor: Colors.red,
                               content: Row(
-                                children: const [
+                                children: [
                                   Icon(
                                     Icons.warning,
                                     color: Colors.white,
                                   ),
                                   SizedBox(width: 5),
-                                  Text("Fill-up all the textfield",
+                                  Text("Fill-up all the text-field",
                                       style: TextStyle(color: Colors.white)),
                                 ],
                               ),
@@ -571,17 +633,23 @@ class _MyHomepageState extends State<MyHomepage> {
                             });
                             try {
                               String url;
-                              String fname = fullname.text;
+                              String fn = fname.text;
+                              String mn = mname.text;
+                              String ln = lname.text;
+                              String name = '$fn $mn $ln';
                               final ref = FirebaseStorage.instance
                                   .ref()
-                                  .child('UsersId/$fname');
+                                  .child('UsersId/$name');
                               await ref.putFile(File(_image!.path));
                               url = await ref.getDownloadURL();
-                              FirebaseFirestore.instance
+                              await FirebaseFirestore.instance
                                   .collection("Records")
-                                  .doc(fullname.text.toString())
+                                  .doc(name)
                                   .set({
-                                'Fullname': fullname.text,
+                                'Fullname': name,
+                                'Fname': fname.text,
+                                'Initial': mname.text,
+                                'Lname': lname.text,
                                 'Date of Birth': birth.text,
                                 'Date of Death': death.text,
                                 'lat': lat,
@@ -590,13 +658,16 @@ class _MyHomepageState extends State<MyHomepage> {
                                 'image': url,
                               });
                               fullname.clear();
+                              fname.clear();
+                              mname.clear();
+                              lname.clear();
                               birth.clear();
                               death.clear();
                               address = "";
                               lat = 0.0;
                               long = 0.0;
                               location.clear();
-
+                              name = '';
                               _image = null;
                               setState(() {
                                 loading = false;
