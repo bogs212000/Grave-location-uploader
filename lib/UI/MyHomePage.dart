@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'Loading.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -17,8 +18,12 @@ TextEditingController fullname = new TextEditingController();
 TextEditingController fname = new TextEditingController();
 TextEditingController mname = new TextEditingController();
 TextEditingController lname = new TextEditingController();
-TextEditingController birth = new TextEditingController();
-TextEditingController death = new TextEditingController();
+TextEditingController bmonth = new TextEditingController();
+TextEditingController bdate = new TextEditingController();
+TextEditingController byear = new TextEditingController();
+TextEditingController dmonth = new TextEditingController();
+TextEditingController ddate = new TextEditingController();
+TextEditingController dyear = new TextEditingController();
 TextEditingController location = new TextEditingController();
 
 bool loading = false;
@@ -69,38 +74,6 @@ class _MyHomepageState extends State<MyHomepage> {
         }),
         request: const AdRequest());
     _bannedAd.load();
-  }
-
-  _selectDate(BuildContext context) async {
-    final DateTime? selected = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(1940),
-      lastDate: DateTime(2025),
-    );
-    if (selected != null && selected != selectedDate) {
-      setState(() {
-        selectedDate = selected;
-        birth.text =
-            "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
-      });
-    }
-  }
-
-  _selectDate1(BuildContext context) async {
-    final DateTime? selected = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(1940),
-      lastDate: DateTime(2025),
-    );
-    if (selected != null && selected != selectedDate) {
-      setState(() {
-        selectedDate = selected;
-        death.text =
-            "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
-      });
-    }
   }
 
   Future<void> _openImagePicker() async {
@@ -303,32 +276,46 @@ class _MyHomepageState extends State<MyHomepage> {
                             controller: fname,
                             keyboardType: TextInputType.emailAddress,
                             style: const TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.black,
-                                letterSpacing: .5,
-                                fontWeight: FontWeight.w400),
+                              fontSize: 14.0,
+                              color: Colors.black,
+                              letterSpacing: .5,
+                              fontWeight: FontWeight.w400,
+                            ),
                             decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: const BorderSide(
-                                      color:
-                                          Color.fromARGB(255, 219, 219, 219))),
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: const BorderSide(
+                                  color: Color.fromARGB(255, 219, 219, 219),
+                                ),
+                              ),
                               filled: true,
                               fillColor: Colors.white,
                               labelStyle: const TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.black,
-                                  letterSpacing: .5,
-                                  fontWeight: FontWeight.w400),
+                                fontSize: 13.0,
+                                color: Colors.black,
+                                letterSpacing: .5,
+                                fontWeight: FontWeight.w400,
+                              ),
                               labelText: "First name",
-                              prefixIcon: const Icon(Icons.person_2_outlined,
+                              prefixIcon: const Icon(Icons.person_outline,
                                   color: Colors.black),
                               enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color:
-                                          Color.fromARGB(255, 219, 219, 219)),
-                                  borderRadius: BorderRadius.circular(20.0)),
+                                borderSide: const BorderSide(
+                                  color: Color.fromARGB(255, 219, 219, 219),
+                                ),
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
                             ),
+                            onChanged: (value) {
+                              if (value.isNotEmpty) {
+                                fname.value = fname.value.copyWith(
+                                  text: value[0].toUpperCase() +
+                                      value.substring(1),
+                                  selection: TextSelection.collapsed(
+                                      offset: value.length),
+                                );
+                              }
+                            },
                           ),
                           const SizedBox(height: 20),
                           TextField(
@@ -390,117 +377,261 @@ class _MyHomepageState extends State<MyHomepage> {
                                   borderRadius: BorderRadius.circular(20.0)),
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          Row(
+                          const SizedBox(height: 30),
+                          Column(
                             children: [
-                              Column(
+                              Text('Input date of birth'),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        height: 50,
-                                        width: 120,
-                                        child: TextField(
-                                          controller: birth,
-                                          keyboardType: TextInputType.name,
-                                          style: const TextStyle(
-                                              fontSize: 14.0,
-                                              color: Colors.black,
-                                              letterSpacing: .5,
-                                              fontWeight: FontWeight.w400),
-                                          decoration: InputDecoration(
-                                            focusedBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                borderSide: const BorderSide(
-                                                    color: Color.fromARGB(
-                                                        255, 219, 219, 219))),
-                                            filled: true,
-                                            fillColor: Colors.white,
-                                            labelStyle: const TextStyle(
-                                                fontSize: 14.0,
-                                                color: Colors.black,
-                                                letterSpacing: .5,
-                                                fontWeight: FontWeight.w400),
-                                            labelText: "Date of Birth",
-                                            hintText: "DD/MM/YYYY",
-                                            enabledBorder: OutlineInputBorder(
-                                                borderSide: const BorderSide(
-                                                    color: Color.fromARGB(
-                                                        255, 219, 219, 219)),
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        20.0)),
+                                  SizedBox(
+                                    height: 60,
+                                    width: 70,
+                                    child: TextField(
+                                      controller: bmonth,
+                                      keyboardType: TextInputType.number,
+                                      maxLength: 2,
+                                      style: const TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.black,
+                                        letterSpacing: .5,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      decoration: InputDecoration(
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                          borderSide: const BorderSide(
+                                            color: Color.fromARGB(255, 219, 219, 219),
                                           ),
                                         ),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        labelStyle: const TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.black,
+                                          letterSpacing: .5,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        labelText: "Month",
+                                        hintText: "MM",
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                            color: Color.fromARGB(255, 219, 219, 219),
+                                          ),
+                                          borderRadius: BorderRadius.circular(20.0),
+                                        ),
                                       ),
-                                      const SizedBox(width: 10),
-                                      GestureDetector(
-                                        child: Icon(Icons.calendar_month),
-                                        onTap: () {
-                                          _selectDate(context);
-                                        },
-                                      )
-                                    ],
+                                    ),
                                   ),
-                                  const SizedBox(height: 20),
-                                  Row(children: [
-                                    SizedBox(
-                                      height: 50,
-                                      width: 120,
-                                      child: TextField(
-                                        controller: death,
-                                        keyboardType: TextInputType.name,
-                                        style: const TextStyle(
+                                  SizedBox(width: 10),
+                                  SizedBox(
+                                    height: 60,
+                                    width: 70,
+                                    child: TextField(
+                                      controller: bdate,
+                                      keyboardType: TextInputType.number,
+                                      maxLength: 2,
+                                      style: const TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.black,
+                                          letterSpacing: .5,
+                                          fontWeight: FontWeight.w400),
+                                      decoration: InputDecoration(
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            borderSide: const BorderSide(
+                                                color: Color.fromARGB(
+                                                    255, 219, 219, 219))),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        labelStyle: const TextStyle(
                                             fontSize: 14.0,
                                             color: Colors.black,
                                             letterSpacing: .5,
                                             fontWeight: FontWeight.w400),
-                                        decoration: InputDecoration(
-                                          focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              borderSide: const BorderSide(
-                                                  color: Color.fromARGB(
-                                                      255, 219, 219, 219))),
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          labelStyle: const TextStyle(
-                                              fontSize: 14.0,
-                                              color: Colors.black,
-                                              letterSpacing: .5,
-                                              fontWeight: FontWeight.w400),
-                                          labelText: "Date of Death",
-                                          hintText: "DD/MM/YYYY",
-                                          enabledBorder: OutlineInputBorder(
-                                              borderSide: const BorderSide(
-                                                  color: Color.fromARGB(
-                                                      255, 219, 219, 219)),
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0)),
-                                        ),
+                                        labelText: "Date",
+                                        hintText: "DD",
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: const BorderSide(
+                                                color: Color.fromARGB(
+                                                    255, 219, 219, 219)),
+                                            borderRadius:
+                                                BorderRadius.circular(20.0)),
                                       ),
                                     ),
-                                    SizedBox(width: 10),
-                                    GestureDetector(
-                                      child: Icon(Icons.calendar_month),
-                                      onTap: () {
-                                        _selectDate1(context);
-                                      },
-                                    )
-                                  ]),
+                                  ),
+                                  SizedBox(width: 10),
+                                  SizedBox(
+                                    height: 60,
+                                    width: 70,
+                                    child: TextField(
+                                      controller: byear,
+                                      keyboardType: TextInputType.number,
+                                      maxLength: 4,
+                                      style: const TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.black,
+                                          letterSpacing: .5,
+                                          fontWeight: FontWeight.w400),
+                                      decoration: InputDecoration(
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            borderSide: const BorderSide(
+                                                color: Color.fromARGB(
+                                                    255, 219, 219, 219))),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        labelStyle: const TextStyle(
+                                            fontSize: 14.0,
+                                            color: Colors.black,
+                                            letterSpacing: .5,
+                                            fontWeight: FontWeight.w400),
+                                        labelText: "Year",
+                                        hintText: "YYYY",
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: const BorderSide(
+                                                color: Color.fromARGB(
+                                                    255, 219, 219, 219)),
+                                            borderRadius:
+                                                BorderRadius.circular(20.0)),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
+                              const SizedBox(height: 30),
+                              Text('Input date of death'),
+                              const SizedBox(height: 10),
+                              Row(mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly, children: [
+                                SizedBox(
+                                  height: 60,
+                                  width: 70,
+                                  child: TextField(
+                                    controller: dmonth,
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 2,
+                                    style: const TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.black,
+                                        letterSpacing: .5,
+                                        fontWeight: FontWeight.w400),
+                                    decoration: InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide: const BorderSide(
+                                              color: Color.fromARGB(
+                                                  255, 219, 219, 219))),
+                                      filled: true,
+                                      fillColor: Colors.white,
+                                      labelStyle: const TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.black,
+                                          letterSpacing: .5,
+                                          fontWeight: FontWeight.w400),
+                                      labelText: "Month",
+                                      hintText: "MM",
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                              color: Color.fromARGB(
+                                                  255, 219, 219, 219)),
+                                          borderRadius:
+                                              BorderRadius.circular(20.0)),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                SizedBox(
+                                  height: 60,
+                                  width: 70,
+                                  child: TextField(
+                                    controller: ddate,
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 2,
+                                    style: const TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.black,
+                                        letterSpacing: .5,
+                                        fontWeight: FontWeight.w400),
+                                    decoration: InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide: const BorderSide(
+                                              color: Color.fromARGB(
+                                                  255, 219, 219, 219))),
+                                      filled: true,
+                                      fillColor: Colors.white,
+                                      labelStyle: const TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.black,
+                                          letterSpacing: .5,
+                                          fontWeight: FontWeight.w400),
+                                      labelText: "Date",
+                                      hintText: "DD",
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                              color: Color.fromARGB(
+                                                  255, 219, 219, 219)),
+                                          borderRadius:
+                                              BorderRadius.circular(20.0)),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                SizedBox(
+                                  height: 60,
+                                  width: 70,
+                                  child: TextField(
+                                    controller: dyear,
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 4,
+                                    style: const TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.black,
+                                        letterSpacing: .5,
+                                        fontWeight: FontWeight.w400),
+                                    decoration: InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide: const BorderSide(
+                                              color: Color.fromARGB(
+                                                  255, 219, 219, 219))),
+                                      filled: true,
+                                      fillColor: Colors.white,
+                                      labelStyle: const TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.black,
+                                          letterSpacing: .5,
+                                          fontWeight: FontWeight.w400),
+                                      labelText: "Year",
+                                      hintText: "YYYY",
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                              color: Color.fromARGB(
+                                                  255, 219, 219, 219)),
+                                          borderRadius:
+                                              BorderRadius.circular(20.0)),
+                                    ),
+                                  ),
+                                ),
+                              ]),
                             ],
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 30),
                           GestureDetector(
                             child: Container(
                                 alignment: Alignment.center,
                                 child: _image != null
                                     ? Image.file(_image!, fit: BoxFit.cover)
-                                    : Column(
-                                        children: const [
+                                    : const Column(
+                                        children: [
                                           Text('Tap here to take a photo'),
                                         ],
                                       )),
@@ -606,13 +737,18 @@ class _MyHomepageState extends State<MyHomepage> {
                         onPressed: () async {
                           if (lname.text == "" ||
                               fname.text == "" ||
-                              birth.text == "" ||
-                              death.text == "" ||
+                              bmonth.text == "" ||
+                              bdate.text == "" ||
+                              byear.text == "" ||
+                              dmonth.text == "" ||
+                              ddate.text == "" ||
+                              dyear.text == "" ||
                               location.text == "" ||
                               _image == null ||
                               lat == 0.0 ||
                               long == 0.0) {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
                               backgroundColor: Colors.red,
                               content: Row(
                                 children: [
@@ -637,6 +773,16 @@ class _MyHomepageState extends State<MyHomepage> {
                               String mn = mname.text;
                               String ln = lname.text;
                               String name = '$fn $mn $ln';
+                              String bm = bmonth.text;
+                              String bd = bdate.text;
+                              String by = byear.text;
+                              String birth = '$bm/$bd/$by';
+                              String dm = dmonth.text;
+                              String dd = ddate.text;
+                              String dy = dyear.text;
+                              String death = '$dm/$dd/$dy';
+                              String sortBybirth = '$by/$bm/$bd';
+                              String sortBydeath = '$dy/$dm/$dd';
                               final ref = FirebaseStorage.instance
                                   .ref()
                                   .child('UsersId/$name');
@@ -650,19 +796,27 @@ class _MyHomepageState extends State<MyHomepage> {
                                 'Fname': fname.text,
                                 'Initial': mname.text,
                                 'Lname': lname.text,
-                                'Date of Birth': birth.text,
-                                'Date of Death': death.text,
+                                'birth': sortBybirth,
+                                'Date of Birth': birth,
+                                'Date of Death': death,
                                 'lat': lat,
                                 'long': long,
                                 'Location': address,
                                 'image': url,
+                                'sortBydeath': sortBydeath,
                               });
                               fullname.clear();
                               fname.clear();
                               mname.clear();
                               lname.clear();
-                              birth.clear();
-                              death.clear();
+                              bmonth.clear();
+                              bdate.clear();
+                              byear.clear();
+                              dmonth.clear();
+                              ddate.clear();
+                              dyear.clear();
+                              birth = "";
+                              death = "";
                               address = "";
                               lat = 0.0;
                               long = 0.0;
