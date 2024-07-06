@@ -15,3 +15,6 @@ double? userLat;
 double? userlong;
 String? ddeath;
 String? dbirth;
+
+//edit data
+String? docToBeEdit;
