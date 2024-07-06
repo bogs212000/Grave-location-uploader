@@ -5,5 +5,10 @@ class Assets {
   static const String assetsBackground = 'assets/background.jpg';
   static const String assetsCemetery = 'assets/cemetery.png';
   static const String assetsImg = 'assets/img.png';
+  static const String newADMINSB3Upload2 = 'assets/new/ADMIN_SB3Upload2.png';
+  static const String newGoForBigDevelopment = 'assets/new/GoForBigDevelopment.png';
+  static const String newPGrave = 'assets/new/PGrave.png';
+  static const String newUSERSB3 = 'assets/new/USER_SB3.png';
+  static const String newUSERSB4Header = 'assets/new/USER_SB4Header.png';
 
 }
