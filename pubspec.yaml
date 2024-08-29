@@ -49,6 +49,9 @@ dependencies:
   shimmer: ^2.0.0
   google_fonts: ^4.0.3
   cached_network_image: ^3.2.3
+  firebase_auth: ^4.16.0
+  pinput: ^5.0.0
+  fancy_password_field: ^2.0.7
 
 
 dev_dependencies:

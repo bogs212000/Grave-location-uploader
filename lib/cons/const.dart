@@ -11,10 +11,11 @@ double? showlat;
 double? showlong;
 String? showfullname;
 String? showimage;
-double? userLat;
-double? userlong;
+double? userLat = 9.2458347;
+double? userLong = 118.401804;
 String? ddeath;
 String? dbirth;
+String? pin;
 
 //edit data
 String? docToBeEdit;

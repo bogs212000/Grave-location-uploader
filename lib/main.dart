@@ -4,11 +4,12 @@ import 'package:grapp_mapping/UI/MyHomePage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:grapp_mapping/UI/lock.screen.dart';
 
-void main() async {
+import 'auth/auth.wrapper.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  MobileAds.instance.initialize();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -29,6 +30,6 @@ class MyApp extends StatelessWidget {
           // Define the '/' route with LockScreen as the widget
           // You can define other routes here if needed
         },
-        home: LockScreen());
+      home: AuthWrapper(),);
   }
 }

@@ -1,18 +1,21 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grapp_mapping/UI/home.screen.dart';
 import 'package:velocity_x/velocity_x.dart';
+import '../cons/const.dart';
 import 'Loading.dart';
 import 'MyHomePage.dart';
+import 'Pin/pin.input.dart';
 
 TextEditingController password = new TextEditingController();
-TextEditingController username = new TextEditingController();
-String? pass;
+TextEditingController email = new TextEditingController();
 String? uname;
 bool loading = false;
 bool? auth;
+bool _isVisible = false;
 
 class LockScreen extends StatefulWidget {
   static String id = "MyHomePage";
@@ -26,26 +29,33 @@ class LockScreen extends StatefulWidget {
 class _LockScreenState extends State<LockScreen> {
   @override
   void initState() {
-    fetchpass(setState);
+    fetchpin(setState);
+    super.initState();
   }
 
-  Future<void> fetchpass(Function setState) async {
+  Future<void> fetchpin(Function setState) async {
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('App settings')
           .doc('App')
           .get();
 
-      pass = snapshot.data()?['password'];
-      uname = snapshot.data()?['username'];
+      pin = snapshot.data()?['Pin'];
       setState(() {
-        pass = pass;
+        pin = pin;
       });
-      print(pass);
+      print(pin);
     } catch (e) {
       // Handle errors
     }
   }
+
+  void updateStatus() {
+    setState(() {
+      _isVisible = !_isVisible;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -80,8 +90,8 @@ class _LockScreenState extends State<LockScreen> {
                           SizedBox(height: 20),
                           SizedBox(
                             child: TextField(
-                              controller: username,
-                              keyboardType: TextInputType.visiblePassword,
+                              controller: email,
+                              keyboardType: TextInputType.emailAddress,
                               style: const TextStyle(
                                 fontSize: 14.0,
                                 color: Colors.black,
@@ -103,7 +113,7 @@ class _LockScreenState extends State<LockScreen> {
                                   letterSpacing: .5,
                                   fontWeight: FontWeight.w400,
                                 ),
-                                labelText: "Username",
+                                labelText: "Email",
                                 prefixIcon: const Icon(Icons.person_outline,
                                     color: Colors.black),
                                 enabledBorder: OutlineInputBorder(
@@ -113,21 +123,12 @@ class _LockScreenState extends State<LockScreen> {
                                   borderRadius: BorderRadius.circular(20.0),
                                 ),
                               ),
-                              onChanged: (value) {
-                                if (value.isNotEmpty) {
-                                  fname.value = fname.value.copyWith(
-                                    text: value[0].toUpperCase() +
-                                        value.substring(1),
-                                    selection: TextSelection.collapsed(
-                                        offset: value.length),
-                                  );
-                                }
-                              },
                             ),
                           ),
                           SizedBox(height: 20),
                           SizedBox(
                             child: TextField(
+                              obscureText: _isVisible ? false : true,
                               controller: password,
                               keyboardType: TextInputType.visiblePassword,
                               style: const TextStyle(
@@ -142,6 +143,14 @@ class _LockScreenState extends State<LockScreen> {
                                   borderSide: const BorderSide(
                                     color: Color.fromARGB(255, 219, 219, 219),
                                   ),
+
+                                ),
+                                suffixIcon: IconButton(
+                                  color: Colors.black,
+                                  onPressed: () => updateStatus(),
+                                  icon: Icon(_isVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off),
                                 ),
                                 filled: true,
                                 fillColor: Colors.white,
@@ -152,7 +161,7 @@ class _LockScreenState extends State<LockScreen> {
                                   fontWeight: FontWeight.w400,
                                 ),
                                 labelText: "Password",
-                                prefixIcon: const Icon(Icons.person_outline,
+                                prefixIcon: const Icon(Icons.lock_outline,
                                     color: Colors.black),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(
@@ -174,49 +183,57 @@ class _LockScreenState extends State<LockScreen> {
                             ),
                           ),
                           const SizedBox(height: 5),
-                          auth == false
-                              ? Text('Wrong Password',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      color: Colors.redAccent))
-                              : Text('Password',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      color: Colors.white)),
                           const SizedBox(height: 20),
                           SizedBox(
                             width: 200,
                             height: 40,
                             child: ElevatedButton(
-                              onPressed: () async {
-                                if (password.text == pass) {
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => SearchScreen()),
-                                    // Replace HomeScreen() with your actual home screen widget
-                                    (route) => false,
-                                  );
-                                  setState(() {
-                                    auth = true;
-                                  });
-                                } else {
-                                  password.clear();
-                                  setState(() {
-                                    auth = false;
-                                  });
-                                }
+                              onPressed: () async {try {
+                                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                                  email: email.text,
+                                  password: password.text,
+                                );
+                              } catch (e) {
+                                // Show error dialog if there's an exception
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Error'),
+                                      content: Text(e.toString()),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('OK'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFF265630),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30))),
-                              child: "Next".text.size(20).light.color(Colors.white).make(),
+                              child: "Sign In"
+                                  .text
+                                  .size(20)
+                                  .light
+                                  .color(Colors.white)
+                                  .make(),
                             ),
                           ),
                           const SizedBox(height: 10),
+                          GestureDetector(onTap: (){Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                              PinInputPage(),
+                            ),
+                          );},child: "Sign up".text.make()),
                           Spacer(),
                           Image.asset(
                             'assets/new/GoForBigDevelopment.png',
@@ -227,7 +244,6 @@ class _LockScreenState extends State<LockScreen> {
                       ),
                     ),
                   ),
-
                 ],
               ),
             ),

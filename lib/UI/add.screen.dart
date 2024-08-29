@@ -2,6 +2,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,11 +10,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:grapp_mapping/UI/Loading.dart';
 import 'package:grapp_mapping/UI/MyHomePage.dart';
+import 'package:grapp_mapping/UI/map/get.location.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:velocity_x/velocity_x.dart';
-
+import 'dart:io';
 import '../cons/const.dart';
 import '../fetch/fetch.edit.dart';
+import 'home.screen.dart';
 import 'lock.screen.dart';
 
 String sortBy = "Fullname";
@@ -24,6 +28,7 @@ TextEditingController nameExtensionAdd = TextEditingController();
 TextEditingController birthAdd = TextEditingController();
 TextEditingController deathAdd = TextEditingController();
 bool saveLoading = false;
+File? _image2;
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -38,6 +43,48 @@ class _AddScreenState extends State<AddScreen> {
   @override
   void initState() {
     super.initState();
+  }
+
+  bool isLoading = false;
+  String? message;
+  String? _name;
+  final _picker = ImagePicker();
+
+  Future<void> checkName() async {
+    setState(() {
+      isLoading = true;
+      message = null;
+    });
+
+    bool exists = await doesNameExist();
+
+    setState(() {
+      isLoading = false;
+      message = exists ? 'Name exists' : 'Name does not exist';
+    });
+  }
+
+  Future<bool> doesNameExist() async {
+    final firestore = FirebaseFirestore.instance;
+
+    // Query the Firestore collection where the name field matches the given name
+    final querySnapshot = await firestore
+        .collection('Records') // Replace with your collection name
+        .where('Fullname', isEqualTo: _name)
+        .get();
+
+    // If the query snapshot has documents, then the name exists
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<void> _openImagePicker() async {
+    final XFile? pickedImage =
+        await _picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+    if (pickedImage != null) {
+      setState(() {
+        _image2 = File(pickedImage.path);
+      });
+    }
   }
 
   TextEditingController search2Controller = TextEditingController();
@@ -196,7 +243,7 @@ class _AddScreenState extends State<AddScreen> {
                           children: [
                             Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
+                              const EdgeInsets.symmetric(horizontal: 10),
                               child: GestureDetector(
                                 onTap: () {
                                   Navigator.pop(context);
@@ -212,23 +259,47 @@ class _AddScreenState extends State<AddScreen> {
                       ],
                     ),
                   ),
+                  GestureDetector(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: _image2 != null
+                          ? Container(
+                        height: 160,
+                        width: 160,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: Image.file(_image2!, fit: BoxFit.cover),
+                        ),
+                      )
+                          : Column(
+                              children: [
+                                Container(
+                                  height: 160,
+                                  width: 160,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                  child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(100),
+                                      child: Icon(Icons.camera_alt_outlined, color: Colors.white, size: 60,)),
+                                )
+                              ],
+                            ),
+                    ),
+                    onTap: () {
+                      _openImagePicker();
+                    },
+                  ),
                   Expanded(
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 40),
                         child: Column(
                           children: [
-                            Container(
-                              height: 160,
-                              width: 160,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(100),
-                                  child: Image.asset(
-                                      'assets/new/ADMIN_SB3Upload2.png')),
-                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -249,23 +320,34 @@ class _AddScreenState extends State<AddScreen> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            Container(
-                                              height: 40,
-                                              width: 180,
-                                              decoration: BoxDecoration(
-                                                color: Colors.green[900],
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  SizedBox(width: 60),
-                                                  'Pin on the Map'
-                                                      .text
-                                                      .size(15)
-                                                      .color(Colors.white)
-                                                      .make(),
-                                                ],
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        PickLocation(),
+                                                  ),
+                                                );
+                                              },
+                                              child: Container(
+                                                height: 40,
+                                                width: 180,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.green[900],
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    SizedBox(width: 60),
+                                                    'Pin on the Map'
+                                                        .text
+                                                        .size(15)
+                                                        .color(Colors.white)
+                                                        .make(),
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ],
@@ -312,6 +394,7 @@ class _AddScreenState extends State<AddScreen> {
                                 ),
                               ],
                             ),
+
                             //Last name
                             Row(
                               children: [
@@ -456,6 +539,7 @@ class _AddScreenState extends State<AddScreen> {
                                 controller: birthAdd,
                                 textCapitalization: TextCapitalization.words,
                                 decoration: InputDecoration(
+                                  hintText: 'MM/DD/YYYY',
                                   border: InputBorder.none,
                                 ),
                               ),
@@ -486,6 +570,7 @@ class _AddScreenState extends State<AddScreen> {
                                 controller: deathAdd,
                                 textCapitalization: TextCapitalization.words,
                                 decoration: InputDecoration(
+                                  hintText: 'MM/DD/YYYY',
                                   border: InputBorder.none,
                                 ),
                               ),
@@ -496,6 +581,11 @@ class _AddScreenState extends State<AddScreen> {
                               height: 40,
                               child: ElevatedButton(
                                 onPressed: () async {
+                                  setState(() {
+                                    _name =
+                                        '${firstNameAdd.text} ${middleNameAdd.text} ${lastNameAdd.text} ${nameExtensionAdd.text}';
+                                  });
+                                  await checkName();
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
@@ -508,7 +598,7 @@ class _AddScreenState extends State<AddScreen> {
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(30))),
-                                child: "Save"
+                                child: "Add"
                                     .text
                                     .size(20)
                                     .light
@@ -679,25 +769,35 @@ class _ConfirmPasswordDialogState extends State<ConfirmPasswordDialog> {
             SizedBox(
               width: 100,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_passwordController.text == pass) {
                     setState(() {
                       saveLoading = true;
                     });
-
+                    String? url;
                     String? _fullname =
                         '${firstNameAdd.text} ${middleNameAdd.text} ${lastNameAdd.text} ${nameExtensionAdd.text}';
                     try {
+                      final ref = FirebaseStorage.instance
+                          .ref()
+                          .child('UsersId/$_fullname');
+                      await ref.putFile(File(_image2!.path));
+                      url = await ref.getDownloadURL();
                       FirebaseFirestore.instance
                           .collection('Records')
                           .doc('$_fullname')
                           .set({
+                        'Fullname': _fullname,
                         'Fname': firstNameAdd.text,
                         'Initial': middleNameAdd.text,
                         'Lname': lastNameAdd.text,
                         'Nextension': nameExtensionAdd.text,
                         'Date of Birth': birthAdd.text,
                         'Date of Death': deathAdd.text,
+                        'lat': userLat,
+                        'long': userLong,
+                        'Location': '$userLat, $userLong',
+                        'image': url,
                       });
                       setState(() {
                         saveLoading = false;

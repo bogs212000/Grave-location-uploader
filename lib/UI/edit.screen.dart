@@ -2,6 +2,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +14,9 @@ import 'package:velocity_x/velocity_x.dart';
 
 import '../cons/const.dart';
 import '../fetch/fetch.edit.dart';
+import 'home.screen.dart';
 import 'lock.screen.dart';
+import 'map/show.location.dart';
 
 String sortBy = "Fullname";
 TextEditingController lastNameEdit = TextEditingController();
@@ -35,7 +38,26 @@ class EditScreen extends StatefulWidget {
 class _EditScreenState extends State<EditScreen> {
   @override
   void initState() {
+    fetchpass(setState);
     super.initState();
+  }
+
+
+  Future<void> fetchpass(Function setState) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('User')
+          .doc(FirebaseAuth.instance.currentUser!.email.toString())
+          .get();
+
+      pass = snapshot.data()?['password'];
+      setState(() {
+        pass = pass;
+      });
+      print(pass);
+    } catch (e) {
+      // Handle errors
+    }
   }
 
   TextEditingController search2Controller = TextEditingController();
@@ -51,6 +73,13 @@ class _EditScreenState extends State<EditScreen> {
   List<String> list = ["Name", "Date of Birth", "Date of Death"];
   String search = "";
   String filterSearch = "Fullname";
+  bool _isCircle = true;
+
+  void _toggleShape() {
+    setState(() {
+      _isCircle = !_isCircle;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -210,52 +239,57 @@ class _EditScreenState extends State<EditScreen> {
                       ],
                     ),
                   ),
+                SizedBox(height: 20),
+                GestureDetector(
+                  onTap: _toggleShape,
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 500),
+                    height: _isCircle ? 160 : 250,
+                    width: _isCircle ? 160 : 250,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(_isCircle ? 100 : 140),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(_isCircle ? 100 : 140),
+                      child: CachedNetworkImage(
+                        imageUrl: showimage.toString(),
+                        imageBuilder: (context, imageProvider) => Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        placeholder: (context, url) => Center(
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.green.shade100,
+                            highlightColor: Colors.white,
+                            child: Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                height: 200,
+                                width: 200,
+                              ),
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                    ),
+                  ),
+                ),
                   Expanded(
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 40),
                         child: Column(
                           children: [
-                            Container(
-                              height: 160,
-                              width: 160,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(100),
-                                child: CachedNetworkImage(
-                                  imageUrl: showimage.toString(),
-                                  imageBuilder: (context, imageProvider) =>
-                                      Container(
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  placeholder: (context, url) => Center(
-                                    child: Shimmer.fromColors(
-                                        baseColor: Colors.green.shade100,
-                                        highlightColor: Colors.white,
-                                        child: Padding(
-                                          padding: EdgeInsets.all(10),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.blue,
-                                                borderRadius:
-                                                    BorderRadius.circular(100)),
-                                            height: 200,
-                                            width: 200,
-                                          ),
-                                        )),
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      Icon(Icons.error),
-                                ),
-                              ),
-                            ),
+
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -270,32 +304,43 @@ class _EditScreenState extends State<EditScreen> {
                                   },
                                   child: Stack(
                                     children: [
-                                      Container(
-                                        height: 100,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              height: 40,
-                                              width: 180,
-                                              decoration: BoxDecoration(
-                                                color: Colors.green[900],
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  SizedBox(width: 60),
-                                                  'Pin on the Map'
-                                                      .text
-                                                      .size(15)
-                                                      .color(Colors.white)
-                                                      .make(),
-                                                ],
-                                              ),
+                                      GestureDetector(
+                                        onTap:(){
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  ChangeLocation(),
                                             ),
-                                          ],
+                                          );
+                                        },
+                                        child: Container(
+                                          height: 100,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: 40,
+                                                width: 180,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.green[900],
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    SizedBox(width: 60),
+                                                    'Pin on the Map'
+                                                        .text
+                                                        .size(15)
+                                                        .color(Colors.white)
+                                                        .make(),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       Container(
@@ -714,7 +759,7 @@ class _ConfirmPasswordDialogState extends State<ConfirmPasswordDialog> {
                     try {
                       FirebaseFirestore.instance
                           .collection('Records')
-                          .doc(docToBeEdit)
+                          .doc('$docToBeEdit')
                           .update({
                         'Fname': firstNameEdit.text,
                         'Initial': middleNameEdit.text,

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,6 +15,7 @@ import 'add.screen.dart';
 import 'edit.screen.dart';
 
 String sortBy = "Fullname";
+String? pass;
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -25,6 +27,30 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  @override
+  void initState() {
+    fetchpass(setState);
+    super.initState();
+  }
+
+
+  Future<void> fetchpass(Function setState) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('User')
+          .doc(FirebaseAuth.instance.currentUser!.email.toString())
+          .get();
+
+      pass = snapshot.data()?['password'];
+      setState(() {
+        pass = pass;
+      });
+      print(pass);
+    } catch (e) {
+      // Handle errors
+    }
+  }
+
   TextEditingController search2Controller = TextEditingController();
   String? _selectedValue;
   bool servicestatus = false;
@@ -35,7 +61,10 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Marker> _marker = <Marker>[];
   String dropdownValue1 = "First Name";
   String? dropdownValue;
+  String dropdownValue2 = "Monthly";
+  String? dropdownValue3;
   List<String> list = ["Name", "Date of Birth", "Date of Death"];
+  List<String> list2 = ["Monthly"];
   String search = "";
   String filterSearch = "Fullname";
 
@@ -192,8 +221,86 @@ class _SearchScreenState extends State<SearchScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 1),
+                                            height: 30,
+                                            decoration: BoxDecoration(
+                                                color: Colors.green[900],
+                                                borderRadius: BorderRadius.circular(20)),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.filter_list,
+                                                  color: Colors.white,
+                                                  size: 15,
+                                                ),
+                                                SizedBox(width: 5),
+                                                SizedBox(
+                                                  width: dropdownValue == null ? 100 : 100,
+                                                  child: DropdownButtonHideUnderline(
+                                                    child: DropdownButton<String>(
+                                                      hint: 'Filter'
+                                                          .text
+                                                          .color(Colors.white)
+                                                          .size(12)
+                                                          .make(),
+                                                      dropdownColor: Colors.green[300],
+                                                      value: dropdownValue,
+                                                      icon: Icon(Icons.arrow_drop_down,
+                                                          color: Colors.white),
+                                                      iconSize: 20,
+                                                      style: TextStyle(
+                                                          color: Colors.green[900],
+                                                          fontSize: 12),
+                                                      onChanged: (String? value) {
+                                                        // This is called when the user selects an item.
+                                                        setState(() {
+                                                          dropdownValue = value!;
+                                                        });
+                                                        if (value == "Date of Birth") {
+                                                          setState(() {
+                                                            sortBy = "Date of Birth";
+                                                          });
+                                                        } else if (value == "Name") {
+                                                          setState(() {
+                                                            sortBy = "Fullname";
+                                                          });
+                                                        } else {
+                                                          setState(() {
+                                                            sortBy = "Date of Death";
+                                                          });
+                                                        }
+                                                      },
+                                                      items: list
+                                                          .map<DropdownMenuItem<String>>(
+                                                              (String value) {
+                                                            return DropdownMenuItem<String>(
+                                                              value: value,
+                                                              child: Text(
+                                                                value,
+                                                                style: TextStyle(
+                                                                    fontSize: 12,
+                                                                    color: Colors.white),
+                                                              ),
+                                                            );
+                                                          }).toList(),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                          .animate()
+                                          .fadeIn() // uses `Animate.defaultDuration`
+                                          .scale() // inherits duration from fadeIn
+                                          .move(delay: 100.ms, duration: 600.ms),
+                                      Spacer(),
                                       Container(
                                         width: 150,
                                         height: 40,
@@ -275,33 +382,29 @@ class _SearchScreenState extends State<SearchScreen> {
                             .move(delay: 300.ms, duration: 600.ms),
                         SizedBox(height: 10),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 1),
                               height: 30,
                               decoration: BoxDecoration(
-                                  color: Colors.green[900],
+                                  color: Colors.green[300],
                                   borderRadius: BorderRadius.circular(20)),
                               child: Row(
                                 children: [
-                                  Icon(
-                                    Icons.filter_list,
-                                    color: Colors.white,
-                                    size: 15,
-                                  ),
                                   SizedBox(width: 5),
                                   SizedBox(
-                                    width: dropdownValue == null ? 100 : 100,
+                                    width: dropdownValue == null ? 120 : 120,
                                     child: DropdownButtonHideUnderline(
                                       child: DropdownButton<String>(
-                                        hint: 'Filter'
+                                        hint: 'Generate Report'
                                             .text
                                             .color(Colors.white)
                                             .size(12)
                                             .make(),
                                         dropdownColor: Colors.green[300],
-                                        value: dropdownValue,
+                                        value: dropdownValue3,
                                         icon: Icon(Icons.arrow_drop_down,
                                             color: Colors.white),
                                         iconSize: 20,
@@ -311,35 +414,22 @@ class _SearchScreenState extends State<SearchScreen> {
                                         onChanged: (String? value) {
                                           // This is called when the user selects an item.
                                           setState(() {
-                                            dropdownValue = value!;
+                                            dropdownValue3 = value!;
                                           });
-                                          if (value == "Date of Birth") {
-                                            setState(() {
-                                              sortBy = "Date of Birth";
-                                            });
-                                          } else if (value == "Name") {
-                                            setState(() {
-                                              sortBy = "Fullname";
-                                            });
-                                          } else {
-                                            setState(() {
-                                              sortBy = "Date of Death";
-                                            });
-                                          }
                                         },
-                                        items: list
+                                        items: list2
                                             .map<DropdownMenuItem<String>>(
                                                 (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(
-                                              value,
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.white),
-                                            ),
-                                          );
-                                        }).toList(),
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(
+                                                  value,
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.white),
+                                                ),
+                                              );
+                                            }).toList(),
                                       ),
                                     ),
                                   ),
@@ -363,8 +453,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             ? FirebaseFirestore.instance
                                 .collection("Records")
                                 .where(filterSearch,
-                                    isGreaterThanOrEqualTo: search)
-                                .where(filterSearch, isLessThan: search + 'z')
+                            isGreaterThanOrEqualTo: search)
+                                .where(filterSearch, isLessThanOrEqualTo: search + '\uf8ff')
                                 .snapshots()
                             : FirebaseFirestore.instance
                                 .collection('Records')
@@ -427,6 +517,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 .map((DocumentSnapshot document) {
                               Map<String, dynamic> data =
                                   document.data()! as Map<String, dynamic>;
+                              String documentId = document.id;
                               String? image = data["image"];
                               String? fullname = data["Fullname"];
                               String? firstname = data["Fname"];
@@ -479,16 +570,18 @@ class _SearchScreenState extends State<SearchScreen> {
                                                     onTap: () {
 
                                                       setState(() {
-                                                       docToBeEdit = fullname;
+                                                       docToBeEdit = documentId;
                                                        showimage =image;
                                                        lastNameEdit.text = lastname!;
                                                        middleNameEdit.text = middlename!;
                                                        firstNameEdit.text = firstname!;
                                                        birthEdit.text = birth!;
                                                        deathEdit.text = death!;
+                                                       showlat = lat;
+                                                       showlong = long;
                                                       });
                                                       print(
-                                                          "$showlat, $showlong");
+                                                          "$documentId, $showlat, $showlong");
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
@@ -556,6 +649,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                           Flexible(
                                                             child: Text(
                                                               '$firstname',
+                                                              overflow:
+                                                              TextOverflow
+                                                                  .ellipsis,
                                                               style: GoogleFonts.poppins(
                                                                   fontSize: 16,
                                                                   fontWeight:
@@ -584,7 +680,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       ),
                                                       Row(
                                                         children: [
-                                                          'Date of Birth:   '
+                                                          'Date of Birth:    '
                                                               .text
                                                               .make(),
                                                           Flexible(
@@ -600,7 +696,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       ),
                                                       Row(
                                                         children: [
-                                                          'Date of Death:   '
+                                                          'Date of Death:  '
                                                               .text
                                                               .make(),
                                                           Flexible(
@@ -704,10 +800,10 @@ class _SearchScreenState extends State<SearchScreen> {
                             );
                           },
                           child: CircleAvatar(
-                            radius: 25,
+                            radius: 30,
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
-                            child: Icon(Icons.add),
+                            child: Icon(Icons.add, size: 40,),
                           ),
                         )
                       ],
@@ -717,6 +813,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             )
           ],
-        ));
+        ),
+    );
   }
 }
