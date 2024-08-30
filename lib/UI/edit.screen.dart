@@ -9,6 +9,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:grapp_mapping/UI/Loading.dart';
+import 'package:grapp_mapping/UI/MyHomePage.dart';
+import 'package:grapp_mapping/UI/success/update.success.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -83,9 +85,7 @@ class _EditScreenState extends State<EditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return saveLoading
-        ? Loading()
-        : Scaffold(
+    return Scaffold(
             backgroundColor: Colors.white,
             // appBar: AppBar(
             //   backgroundColor: Color(0xFF265630),
@@ -226,7 +226,11 @@ class _EditScreenState extends State<EditScreen> {
                                   const EdgeInsets.symmetric(horizontal: 10),
                               child: GestureDetector(
                                 onTap: () {
-                                  Navigator.pop(context);
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    '/home', // newRouteName: Route to navigate to
+                                        (route) => false, // predicate: Remove all previous routes
+                                  );
                                 },
                                 child: Icon(
                                   Icons.arrow_back_ios_new_outlined,
@@ -588,6 +592,32 @@ class _EditScreenState extends State<EditScreen> {
                                     .make(),
                               ),
                             ),
+                            SizedBox(height: 20),
+                            SizedBox(
+                              width: 200,
+                              height: 40,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return ConfirmPasswordDelete();
+                                    },
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                        BorderRadius.circular(30))),
+                                child: "Delete"
+                                    .text
+                                    .size(20)
+                                    .light
+                                    .color(Colors.white)
+                                    .make(),
+                              ),
+                            ),
                             SizedBox(height: 30),
                           ],
                         ),
@@ -614,6 +644,46 @@ class ConfirmPasswordDialog extends StatefulWidget {
 
 class _ConfirmPasswordDialogState extends State<ConfirmPasswordDialog> {
   final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _handleSave() async {
+    setState(() {
+      saveLoading = true;
+    });
+    try {
+      if (_passwordController.text == pass) {
+        await FirebaseFirestore.instance
+            .collection('Records')
+            .doc(docToBeEdit)
+            .update({
+          'Fname': firstNameEdit.text,
+          'Initial': middleNameEdit.text,
+          'Lname': lastNameEdit.text,
+          'Date of Birth': birthEdit.text,
+          'Date of Death': deathEdit.text,
+        });
+        print('success');
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(backgroundColor: Colors.green, content: 'All changes have been saved successfully!'.text.color(Colors.white).make()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Incorrect password!')),
+        );
+      }
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving data!')),
+      );
+    } finally {
+      setState(() {
+        saveLoading = false;
+      });
+    }
+
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -679,7 +749,7 @@ class _ConfirmPasswordDialogState extends State<ConfirmPasswordDialog> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
+                            saveLoading ? "".text.make() : Container(
                               width: 240,
                               height: 40,
                               padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -692,6 +762,7 @@ class _ConfirmPasswordDialogState extends State<ConfirmPasswordDialog> {
                                 ),
                               ),
                               child: TextField(
+                                keyboardType: TextInputType.visiblePassword,
                                 controller: _passwordController,
                                 textCapitalization: TextCapitalization.words,
                                 onChanged: (value) {},
@@ -707,7 +778,7 @@ class _ConfirmPasswordDialogState extends State<ConfirmPasswordDialog> {
                     ),
                   ),
                   // Second Container with a circular icon
-                  Positioned(
+                  saveLoading ? "".text.make() : Positioned(
                     top: 0,
                     // Adjust this value to position it as desired
                     right: 0,
@@ -750,51 +821,216 @@ class _ConfirmPasswordDialogState extends State<ConfirmPasswordDialog> {
             SizedBox(height: 20),
             SizedBox(
               width: 100,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_passwordController.text == pass) {
-                    setState(() {
-                      saveLoading = true;
-                    });
-                    try {
-                      FirebaseFirestore.instance
-                          .collection('Records')
-                          .doc('$docToBeEdit')
-                          .update({
-                        'Fname': firstNameEdit.text,
-                        'Initial': middleNameEdit.text,
-                        'Lname': lastNameEdit.text,
-                        'Date of Birth': birthEdit.text,
-                        'Date of Death': deathEdit.text,
-                      });
-                      setState(() {
-                        saveLoading = false;
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            backgroundColor: Colors.green[900],
-                            content: 'Update Successfully!'
-                                .text
-                                .color(Colors.white)
-                                .make()),
-                      );
-                    } catch (e) {
-                      setState(() {
-                        saveLoading = false;
-                      });
-                      print(e);
-                    }
-                  } else {
-                    setState(() {
-                      saveLoading = false;
-                    });
-                    // Handle incorrect password case
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Incorrect password!')),
-                    );
-                  }
-                  Navigator.of(context).pop();
-                },
+              child: saveLoading ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  'Loading'.text.color(Colors.green[900]).make(),
+                ],
+              ) : ElevatedButton(
+                onPressed: _handleSave,
+                style: ElevatedButton.styleFrom(
+                  shape: StadiumBorder(),
+                  backgroundColor: Colors.green[900],
+                ),
+                child: Text(
+                  'OK',
+                  style: TextStyle(fontSize: 15, color: Colors.white),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+//delete
+class ConfirmPasswordDelete extends StatefulWidget {
+  @override
+  State<ConfirmPasswordDelete> createState() => _ConfirmPasswordDeleteState();
+}
+
+class _ConfirmPasswordDeleteState extends State<ConfirmPasswordDelete> {
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _handleSave() async {
+    setState(() {
+      saveLoading = true;
+    });
+    try {
+      if (_passwordController.text == pass) {
+        await FirebaseFirestore.instance
+            .collection('Records')
+            .doc(docToBeEdit).delete();
+        print('success');
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(backgroundColor: Colors.green, content: 'Data have been deleted successfully!'.text.color(Colors.white).make()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Incorrect password!')),
+        );
+      }
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving data!')),
+      );
+    } finally {
+      setState(() {
+        saveLoading = false;
+      });
+    }
+
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(10),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.green[200],
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(10),
+                  topLeft: Radius.circular(10),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    'Confirm Password',
+                    style: TextStyle(
+                      color: Colors.green[900],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15.0,
+                    ),
+                  ),
+                  Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(
+                      Icons.cancel_outlined,
+                      color: Colors.green[900],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: 'Are you sure you want to delete this data? Please enter your password to confirm the action.'
+                  .text
+                  .color(Colors.green[900])
+                  .make(),
+            ),
+            SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Stack(
+                children: [
+                  // First Container with a TextField
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            saveLoading ? "".text.make() : Container(
+                              width: 240,
+                              height: 40,
+                              padding: EdgeInsets.symmetric(horizontal: 16.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30.0),
+                                border: Border.all(
+                                  color: Colors.green[400]!,
+                                  width: 2.0,
+                                ),
+                              ),
+                              child: TextField(
+                                keyboardType: TextInputType.visiblePassword,
+                                controller: _passwordController,
+                                textCapitalization: TextCapitalization.words,
+                                onChanged: (value) {},
+                                decoration: InputDecoration(
+                                  hintText: 'Password',
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Second Container with a circular icon
+                  saveLoading ? "".text.make() :  Positioned(
+                    top: 0,
+                    // Adjust this value to position it as desired
+                    right: 0,
+                    // Adjust this value to position it as desired
+                    child: Container(
+                      height: 40,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  color: Colors.green[300],
+                                  borderRadius: BorderRadius.circular(60),
+                                  border: Border.all(
+                                    color: Colors.green[300]!,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.lock,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            SizedBox(
+              width: 100,
+              child: saveLoading ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  'Loading'.text.color(Colors.green[900]).make(),
+                ],
+              ) : ElevatedButton(
+                onPressed: _handleSave,
                 style: ElevatedButton.styleFrom(
                   shape: StadiumBorder(),
                   backgroundColor: Colors.green[900],

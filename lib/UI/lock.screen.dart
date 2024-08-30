@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:grapp_mapping/UI/home.screen.dart';
 import 'package:velocity_x/velocity_x.dart';
 import '../cons/const.dart';
@@ -29,8 +30,43 @@ class LockScreen extends StatefulWidget {
 class _LockScreenState extends State<LockScreen> {
   @override
   void initState() {
+    checkGps();
     fetchpin(setState);
     super.initState();
+  }
+
+  checkGps() async {
+    servicestatus = await Geolocator.isLocationServiceEnabled();
+    if (servicestatus) {
+      permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          print('Location permissions are denied');
+        } else if (permission == LocationPermission.deniedForever) {
+          print("'Location permissions are permanently denied");
+        } else {
+          haspermission = true;
+
+        }
+      } else {
+        haspermission = true;
+
+      }
+
+      if (haspermission) {
+        setState(() {
+          //refresh the UI
+        });
+      }
+    } else {
+      print("GPS Service is not enabled, turn on GPS location");
+    }
+
+    setState(() {
+      //refresh the UI
+    });
   }
 
   Future<void> fetchpin(Function setState) async {
@@ -226,14 +262,14 @@ class _LockScreenState extends State<LockScreen> {
                                   .make(),
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 15),
                           GestureDetector(onTap: (){Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) =>
                               PinInputPage(),
                             ),
-                          );},child: "Sign up".text.make()),
+                          );},child: "Sign Up".text.size(16).make()),
                           Spacer(),
                           Image.asset(
                             'assets/new/GoForBigDevelopment.png',

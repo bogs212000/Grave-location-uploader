@@ -21,13 +21,13 @@ class _LoadingState extends State<Loading> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircularProgressIndicator(
-                  color: Colors.white,
+                  color: Colors.green[900],
                 ),
                 const SizedBox(width: 10),
-                const Text("Loading...",
+                Text("Loading...",
                     style: TextStyle(
                         fontSize: 12.0,
-                        color: Colors.green,
+                        color: Colors.green[900],
                         letterSpacing: 1.0,
                         fontWeight: FontWeight.bold)),
               ],

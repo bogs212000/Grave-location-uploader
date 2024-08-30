@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:fancy_password_field/fancy_password_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:grapp_mapping/UI/success/success.screen.dart';
 import 'package:velocity_x/velocity_x.dart';
+
+import '../Loading.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -30,9 +33,10 @@ class _SignUpPageState extends State<SignUpPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
-      await _store.collection('User').doc(
-          _emailController.text.toString().trim()).set(
-          {'password': _passwordController.text.toString().trim()});
+      await _store
+          .collection('User')
+          .doc(_emailController.text.toString().trim())
+          .set({'password': _passwordController.text.toString().trim()});
 
       // Navigate to another page if needed
     } catch (e) {
@@ -48,206 +52,241 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text('Sign Up'),
-      ),
-      body: Container(
-        color: Colors.white,
-        height: double.infinity,
-        width: double.infinity,
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            SizedBox(
-              child: TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.black,
-                  letterSpacing: .5,
-                  fontWeight: FontWeight.w400,
-                ),
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(255, 219, 219, 219),
-                    ),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelStyle: const TextStyle(
-                    fontSize: 13.0,
-                    color: Colors.black,
-                    letterSpacing: .5,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  labelText: "Email",
-                  prefixIcon: const Icon(Icons.person_outline,
-                      color: Colors.black),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(255, 219, 219, 219),
-                    ),
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                ),
-              ),
+    return _isLoading
+        ? Loading()
+        : Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              title: Text('Sign Up'),
             ),
-            SizedBox(height: 16),
-            SizedBox(
-              child: FancyPasswordField(
-                validationRules: {DigitValidationRule(),
-                  UppercaseValidationRule(),
-                  LowercaseValidationRule(),
-                  SpecialCharacterValidationRule(),},
-                validationRuleBuilder: (rules, value) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: rules.map((rule) {
-                      final ruleStatus = rule.validate(value);
-                      return Row(
-                        children: [
-                          Icon(
-                            ruleStatus ? Icons.check_circle : Icons.circle,
-                            color: ruleStatus ? Colors.green : Colors.grey,
+            body: Container(
+              color: Colors.white,
+              height: double.infinity,
+              width: double.infinity,
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  SizedBox(
+                    child: TextField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.black,
+                        letterSpacing: .5,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 219, 219, 219),
                           ),
-                          SizedBox(width: 8),
-                          Text(
-                            rule.name,
-                            style: TextStyle(
-                              color: ruleStatus ? Colors.green : Colors.grey,
-                            ),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        labelStyle: const TextStyle(
+                          fontSize: 13.0,
+                          color: Colors.black,
+                          letterSpacing: .5,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        labelText: "Email",
+                        prefixIcon: const Icon(Icons.person_outline,
+                            color: Colors.black),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 219, 219, 219),
                           ),
-                        ],
-                      );
-                    }).toList(),
-                  );
-                },
-                controller: _passwordController,
-                keyboardType: TextInputType.visiblePassword,
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.black,
-                  letterSpacing: .5,
-                  fontWeight: FontWeight.w400,
-                ),
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(255, 219, 219, 219),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
                     ),
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelStyle: const TextStyle(
-                    fontSize: 13.0,
-                    color: Colors.black,
-                    letterSpacing: .5,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  labelText: "Create Password",
-                  prefixIcon: const Icon(Icons.lock_outline,
-                      color: Colors.black),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(255, 219, 219, 219),
-                    ),
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                ),
-              ),
-            ),
-            // SizedBox(
-            //   child: FancyPasswordField(
-            //     controller: _confirmPasswordController,
-            //     keyboardType: TextInputType.emailAddress,
-            //     style: const TextStyle(
-            //       fontSize: 14.0,
-            //       color: Colors.black,
-            //       letterSpacing: .5,
-            //       fontWeight: FontWeight.w400,
-            //     ),
-            //     decoration: InputDecoration(
-            //       focusedBorder: OutlineInputBorder(
-            //         borderRadius: BorderRadius.circular(20),
-            //         borderSide: const BorderSide(
-            //           color: Color.fromARGB(255, 219, 219, 219),
-            //         ),
-            //       ),
-            //       filled: true,
-            //       fillColor: Colors.white,
-            //       labelStyle: const TextStyle(
-            //         fontSize: 13.0,
-            //         color: Colors.black,
-            //         letterSpacing: .5,
-            //         fontWeight: FontWeight.w400,
-            //       ),
-            //       labelText: "Email",
-            //       prefixIcon: const Icon(Icons.person_outline,
-            //           color: Colors.black),
-            //       enabledBorder: OutlineInputBorder(
-            //         borderSide: const BorderSide(
-            //           color: Color.fromARGB(255, 219, 219, 219),
-            //         ),
-            //         borderRadius: BorderRadius.circular(20.0),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: 200,
-              height: 40,
-              child: ElevatedButton(
-                onPressed: () async {
-                  try {
-
-                  } catch (e) {
-                    // Show error dialog if there's an exception
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Error'),
-                          content: Text(e.toString()),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('OK'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
+                  SizedBox(height: 16),
+                  SizedBox(
+                    child: FancyPasswordField(
+                      validationRules: {
+                        DigitValidationRule(),
+                        UppercaseValidationRule(),
+                        LowercaseValidationRule(),
+                        SpecialCharacterValidationRule(),
+                      },
+                      validationRuleBuilder: (rules, value) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: rules.map((rule) {
+                            final ruleStatus = rule.validate(value);
+                            return Row(
+                              children: [
+                                Icon(
+                                  ruleStatus
+                                      ? Icons.check_circle
+                                      : Icons.circle,
+                                  color:
+                                      ruleStatus ? Colors.green : Colors.grey,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  rule.name,
+                                  style: TextStyle(
+                                    color:
+                                        ruleStatus ? Colors.green : Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }).toList(),
                         );
                       },
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF265630),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30))),
-                child: "Sign up"
-                    .text
-                    .size(20)
-                    .light
-                    .color(Colors.white)
-                    .make(),
+                      controller: _passwordController,
+                      keyboardType: TextInputType.visiblePassword,
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.black,
+                        letterSpacing: .5,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 219, 219, 219),
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        labelStyle: const TextStyle(
+                          fontSize: 13.0,
+                          color: Colors.black,
+                          letterSpacing: .5,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        labelText: "Create Password",
+                        prefixIcon:
+                            const Icon(Icons.lock_outline, color: Colors.black),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 219, 219, 219),
+                          ),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // SizedBox(
+                  //   child: FancyPasswordField(
+                  //     controller: _confirmPasswordController,
+                  //     keyboardType: TextInputType.emailAddress,
+                  //     style: const TextStyle(
+                  //       fontSize: 14.0,
+                  //       color: Colors.black,
+                  //       letterSpacing: .5,
+                  //       fontWeight: FontWeight.w400,
+                  //     ),
+                  //     decoration: InputDecoration(
+                  //       focusedBorder: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(20),
+                  //         borderSide: const BorderSide(
+                  //           color: Color.fromARGB(255, 219, 219, 219),
+                  //         ),
+                  //       ),
+                  //       filled: true,
+                  //       fillColor: Colors.white,
+                  //       labelStyle: const TextStyle(
+                  //         fontSize: 13.0,
+                  //         color: Colors.black,
+                  //         letterSpacing: .5,
+                  //         fontWeight: FontWeight.w400,
+                  //       ),
+                  //       labelText: "Email",
+                  //       prefixIcon: const Icon(Icons.person_outline,
+                  //           color: Colors.black),
+                  //       enabledBorder: OutlineInputBorder(
+                  //         borderSide: const BorderSide(
+                  //           color: Color.fromARGB(255, 219, 219, 219),
+                  //         ),
+                  //         borderRadius: BorderRadius.circular(20.0),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: 200,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        try {
+                          await _auth.createUserWithEmailAndPassword(
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                          );
+                          await _store
+                              .collection('User')
+                              .doc(_emailController.text.toString().trim())
+                              .set({
+                            'password':
+                                _passwordController.text.toString().trim(),
+                            'role': 'admin',
+                          });
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  SuccessScreen(),
+                            ),
+                          );
+                        } catch (e) {
+                          // Show error dialog if there's an exception
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Error'),
+                                content: Text(e.toString()),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('OK'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF265630),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30))),
+                      child: "Sign up"
+                          .text
+                          .size(20)
+                          .light
+                          .color(Colors.white)
+                          .make(),
+                    ),
+                  ),
+                  Spacer(),
+                  Image.asset(
+                    'assets/new/GoForBigDevelopment.png',
+                    height: 100,
+                  ),
+                ],
               ),
             ),
-            Spacer(),
-            Image.asset(
-              'assets/new/GoForBigDevelopment.png',
-              height: 100,
-            ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 }

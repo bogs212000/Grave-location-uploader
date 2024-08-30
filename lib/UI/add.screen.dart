@@ -79,7 +79,7 @@ class _AddScreenState extends State<AddScreen> {
 
   Future<void> _openImagePicker() async {
     final XFile? pickedImage =
-        await _picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+    await _picker.pickImage(source: ImageSource.camera, imageQuality: 70);
     if (pickedImage != null) {
       setState(() {
         _image2 = File(pickedImage.path);
@@ -106,516 +106,528 @@ class _AddScreenState extends State<AddScreen> {
     return saveLoading
         ? Loading()
         : Scaffold(
-            backgroundColor: Colors.white,
-            // appBar: AppBar(
-            //   backgroundColor: Color(0xFF265630),
-            //   foregroundColor: Colors.white,
-            //   title: Row(
-            //     children: [
-            //       // const Text(
-            //       //   "Sort by: ",
-            //       //   style: TextStyle(fontSize: 12),
-            //       // ),
-            //       // DropdownButton<String>(
-            //       //   dropdownColor: Colors.blue[100],
-            //       //   value: dropdownValue,
-            //       //   icon: const Icon(Icons.sort, size: 15),
-            //       //   elevation: 12,
-            //       //   underline: Container(
-            //       //     height: 1,
-            //       //     color: Colors.white,
-            //       //   ),
-            //       //   onChanged: (String? value) {
-            //       //     // This is called when the user selects an item.
-            //       //     setState(() {
-            //       //       dropdownValue = value!;
-            //       //     });
-            //       //     if (value == "Birth") {
-            //       //       setState(() {
-            //       //         sortBy = "Date of Birth";
-            //       //       });
-            //       //     } else if (value == "Name") {
-            //       //       setState(() {
-            //       //         sortBy = "Fullname";
-            //       //       });
-            //       //     } else {
-            //       //       setState(() {
-            //       //         sortBy = "Date of Death";
-            //       //       });
-            //       //     }
-            //       //   },
-            //       //   items: list.map<DropdownMenuItem<String>>((String value) {
-            //       //     return DropdownMenuItem<String>(
-            //       //       value: value,
-            //       //       child: Text(value, style: TextStyle(fontSize: 12),),
-            //       //     );
-            //       //   }).toList(),
-            //       // ),
-            //       const SizedBox(width: 5),
-            //       Spacer(),
-            //       AnimatedContainer(
-            //         duration: Duration(milliseconds: 300),
-            //         height: 40,
-            //         width: search == "" ? 100 : 120,
-            //         child: TextFormField(
-            //           controller: search2Controller,
-            //           textCapitalization: TextCapitalization.words,
-            //           onChanged: (value) {
-            //             setState(() {
-            //               search = value;
-            //             });
-            //           },
-            //           style: const TextStyle(fontSize: 15),
-            //           decoration: InputDecoration(
-            //             contentPadding: const EdgeInsets.all(10),
-            //             focusColor: Colors.blue.shade50,
-            //             hintText: "Search...",
-            //             suffixIcon: search == ""
-            //                 ? Icon(Icons.search)
-            //                 : GestureDetector(
-            //                     onTap: () {
-            //                       search2Controller.clear();
-            //                       setState(() {
-            //                         search = "";
-            //                       });
-            //                     },
-            //                     child: Icon(
-            //                       Icons.cancel_outlined,
-            //                       color: Colors.grey,
-            //                     ),
-            //                   ),
-            //             filled: true,
-            //             fillColor: Colors.blue.shade50,
-            //             focusedBorder: OutlineInputBorder(
-            //                 borderRadius: BorderRadius.circular(40),
-            //                 borderSide: const BorderSide(color: Colors.white)),
-            //             labelStyle: const TextStyle(color: Colors.white),
-            //             enabledBorder: OutlineInputBorder(
-            //                 borderSide: const BorderSide(color: Colors.white),
-            //                 borderRadius: BorderRadius.circular(40.0)),
-            //           ),
-            //         ),
-            //       ),
-            //       Column(
-            //         children: [
-            //           GestureDetector(
-            //               onTap: () {
-            //                 if (filterSearch == "Fullname") {
-            //                   setState(() {
-            //                     filterSearch = "Lname";
-            //                   });
-            //                 } else {
-            //                   setState(() {
-            //                     filterSearch = "Fullname";
-            //                   });
-            //                 }
-            //               },
-            //               child: Icon(Icons.change_circle)),
-            //           filterSearch == "Lname"
-            //               ? Text("Last name", style: TextStyle(fontSize: 7))
-            //               : Text("First name", style: TextStyle(fontSize: 7))
-            //         ],
-            //       )
-            //     ],
-            //   ),
-            //   elevation: 0,
-            // ),
-            body: Container(
-              height: double.infinity,
+      backgroundColor: Colors.white,
+      // appBar: AppBar(
+      //   backgroundColor: Color(0xFF265630),
+      //   foregroundColor: Colors.white,
+      //   title: Row(
+      //     children: [
+      //       // const Text(
+      //       //   "Sort by: ",
+      //       //   style: TextStyle(fontSize: 12),
+      //       // ),
+      //       // DropdownButton<String>(
+      //       //   dropdownColor: Colors.blue[100],
+      //       //   value: dropdownValue,
+      //       //   icon: const Icon(Icons.sort, size: 15),
+      //       //   elevation: 12,
+      //       //   underline: Container(
+      //       //     height: 1,
+      //       //     color: Colors.white,
+      //       //   ),
+      //       //   onChanged: (String? value) {
+      //       //     // This is called when the user selects an item.
+      //       //     setState(() {
+      //       //       dropdownValue = value!;
+      //       //     });
+      //       //     if (value == "Birth") {
+      //       //       setState(() {
+      //       //         sortBy = "Date of Birth";
+      //       //       });
+      //       //     } else if (value == "Name") {
+      //       //       setState(() {
+      //       //         sortBy = "Fullname";
+      //       //       });
+      //       //     } else {
+      //       //       setState(() {
+      //       //         sortBy = "Date of Death";
+      //       //       });
+      //       //     }
+      //       //   },
+      //       //   items: list.map<DropdownMenuItem<String>>((String value) {
+      //       //     return DropdownMenuItem<String>(
+      //       //       value: value,
+      //       //       child: Text(value, style: TextStyle(fontSize: 12),),
+      //       //     );
+      //       //   }).toList(),
+      //       // ),
+      //       const SizedBox(width: 5),
+      //       Spacer(),
+      //       AnimatedContainer(
+      //         duration: Duration(milliseconds: 300),
+      //         height: 40,
+      //         width: search == "" ? 100 : 120,
+      //         child: TextFormField(
+      //           controller: search2Controller,
+      //           textCapitalization: TextCapitalization.words,
+      //           onChanged: (value) {
+      //             setState(() {
+      //               search = value;
+      //             });
+      //           },
+      //           style: const TextStyle(fontSize: 15),
+      //           decoration: InputDecoration(
+      //             contentPadding: const EdgeInsets.all(10),
+      //             focusColor: Colors.blue.shade50,
+      //             hintText: "Search...",
+      //             suffixIcon: search == ""
+      //                 ? Icon(Icons.search)
+      //                 : GestureDetector(
+      //                     onTap: () {
+      //                       search2Controller.clear();
+      //                       setState(() {
+      //                         search = "";
+      //                       });
+      //                     },
+      //                     child: Icon(
+      //                       Icons.cancel_outlined,
+      //                       color: Colors.grey,
+      //                     ),
+      //                   ),
+      //             filled: true,
+      //             fillColor: Colors.blue.shade50,
+      //             focusedBorder: OutlineInputBorder(
+      //                 borderRadius: BorderRadius.circular(40),
+      //                 borderSide: const BorderSide(color: Colors.white)),
+      //             labelStyle: const TextStyle(color: Colors.white),
+      //             enabledBorder: OutlineInputBorder(
+      //                 borderSide: const BorderSide(color: Colors.white),
+      //                 borderRadius: BorderRadius.circular(40.0)),
+      //           ),
+      //         ),
+      //       ),
+      //       Column(
+      //         children: [
+      //           GestureDetector(
+      //               onTap: () {
+      //                 if (filterSearch == "Fullname") {
+      //                   setState(() {
+      //                     filterSearch = "Lname";
+      //                   });
+      //                 } else {
+      //                   setState(() {
+      //                     filterSearch = "Fullname";
+      //                   });
+      //                 }
+      //               },
+      //               child: Icon(Icons.change_circle)),
+      //           filterSearch == "Lname"
+      //               ? Text("Last name", style: TextStyle(fontSize: 7))
+      //               : Text("First name", style: TextStyle(fontSize: 7))
+      //         ],
+      //       )
+      //     ],
+      //   ),
+      //   elevation: 0,
+      // ),
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        child: Column(
+          children: [
+            Container(
+              height: 110,
               width: double.infinity,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    'assets/new/USER_SB4Header.png',
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
               child: Column(
                 children: [
-                  Container(
-                    height: 110,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(
-                          'assets/new/USER_SB4Header.png',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 30),
-                        Row(
-                          children: [
-                            Padding(
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 10),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Icon(
-                                  Icons.arrow_back_ios_new_outlined,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    child: Container(
-                      alignment: Alignment.center,
-                      child: _image2 != null
-                          ? Container(
-                        height: 160,
-                        width: 160,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: Image.file(_image2!, fit: BoxFit.cover),
+                  SizedBox(height: 30),
+                  Row(
+                    children: [
+                      Padding(
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 10),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              '/home', // newRouteName: Route to navigate to
+                                  (route) => false, // predicate: Remove all previous routes
+                            );
+                          },
+                          child: Icon(
+                            Icons.arrow_back_ios_new_outlined,
+                            color: Colors.white,
+                          ),
                         ),
                       )
-                          : Column(
+                    ],
+                  )
+                ],
+              ),
+            ),
+            GestureDetector(
+              child: Container(
+                alignment: Alignment.center,
+                child: _image2 != null
+                    ? Container(
+                  height: 160,
+                  width: 160,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Image.file(_image2!, fit: BoxFit.cover),
+                  ),
+                )
+                    : Column(
+                  children: [
+                    Container(
+                      height: 160,
+                      width: 160,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: Icon(Icons.camera_alt_outlined, color: Colors
+                              .white, size: 60,)),
+                    )
+                  ],
+                ),
+              ),
+              onTap: () {
+                _openImagePicker();
+              },
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (_) => MapScreen(),
+                              //   ),
+                              // );
+                            },
+                            child: Stack(
                               children: [
                                 Container(
-                                  height: 160,
-                                  width: 160,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey,
-                                    borderRadius: BorderRadius.circular(100),
-                                  ),
-                                  child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(100),
-                                      child: Icon(Icons.camera_alt_outlined, color: Colors.white, size: 60,)),
-                                )
-                              ],
-                            ),
-                    ),
-                    onTap: () {
-                      _openImagePicker();
-                    },
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (_) => MapScreen(),
-                                    //   ),
-                                    // );
-                                  },
-                                  child: Stack(
+                                  height: 100,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
                                     children: [
-                                      Container(
-                                        height: 100,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        PickLocation(),
-                                                  ),
-                                                );
-                                              },
-                                              child: Container(
-                                                height: 40,
-                                                width: 180,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.green[900],
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    SizedBox(width: 60),
-                                                    'Pin on the Map'
-                                                        .text
-                                                        .size(15)
-                                                        .color(Colors.white)
-                                                        .make(),
-                                                  ],
-                                                ),
-                                              ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  PickLocation(),
                                             ),
-                                          ],
+                                          );
+                                        },
+                                        child: Container(
+                                          height: 40,
+                                          width: 180,
+                                          decoration: BoxDecoration(
+                                            color: Colors.green[900],
+                                            borderRadius:
+                                            BorderRadius.circular(30),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              SizedBox(width: 60),
+                                              'Pin on the Map'
+                                                  .text
+                                                  .size(15)
+                                                  .color(Colors.white)
+                                                  .make(),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                      Container(
-                                        height: 100,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Container(
-                                                  height: 50,
-                                                  width: 50,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            60),
-                                                    border: Border.all(
-                                                      color: Colors.green[900]!,
-                                                      // Change this to your desired border color
-                                                      width:
-                                                          3.0, // Change this to adjust the border width
-                                                    ),
-                                                  ),
-                                                  child: Center(
-                                                    child: Icon(
-                                                      Icons.pin_drop,
-                                                      color: Colors.green[900],
-                                                      size: 35,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  height: 100,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            height: 50,
+                                            width: 50,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                              BorderRadius.circular(
+                                                  60),
+                                              border: Border.all(
+                                                color: Colors.green[900]!,
+                                                // Change this to your desired border color
+                                                width:
+                                                3.0, // Change this to adjust the border width
+                                              ),
                                             ),
-                                          ],
-                                        ),
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.pin_drop,
+                                                color: Colors.green[900],
+                                                size: 35,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ),
                               ],
                             ),
-
-                            //Last name
-                            Row(
-                              children: [
-                                '  Last Name'
-                                    .text
-                                    .color(Colors.green[900])
-                                    .semiBold
-                                    .make()
-                              ],
-                            ),
-                            Container(
-                              height: 45,
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30.0),
-                                border: Border.all(
-                                  color: Colors.green[900]!,
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: TextField(
-                                controller: lastNameAdd,
-                                textCapitalization: TextCapitalization.words,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                            //First name
-                            SizedBox(height: 5),
-                            Row(
-                              children: [
-                                '  First Name'
-                                    .text
-                                    .color(Colors.green[900])
-                                    .semiBold
-                                    .make()
-                              ],
-                            ),
-                            Container(
-                              height: 45,
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30.0),
-                                border: Border.all(
-                                  color: Colors.green[900]!,
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: TextField(
-                                controller: firstNameAdd,
-                                textCapitalization: TextCapitalization.words,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                            //Middle name
-                            SizedBox(height: 5),
-                            Row(
-                              children: [
-                                '  Middle Name'
-                                    .text
-                                    .color(Colors.green[900])
-                                    .semiBold
-                                    .make()
-                              ],
-                            ),
-                            Container(
-                              height: 45,
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30.0),
-                                border: Border.all(
-                                  color: Colors.green[900]!,
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: TextField(
-                                controller: middleNameAdd,
-                                textCapitalization: TextCapitalization.words,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                            //Name extension
-                            SizedBox(height: 5),
-                            Row(
-                              children: [
-                                '  Name Extension'
-                                    .text
-                                    .color(Colors.green[900])
-                                    .semiBold
-                                    .make()
-                              ],
-                            ),
-                            Container(
-                              height: 45,
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30.0),
-                                border: Border.all(
-                                  color: Colors.green[900]!,
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: TextField(
-                                textCapitalization: TextCapitalization.words,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                            //Date of Birth
-                            SizedBox(height: 5),
-                            Row(
-                              children: [
-                                '  Date of Birth'
-                                    .text
-                                    .color(Colors.green[900])
-                                    .semiBold
-                                    .make()
-                              ],
-                            ),
-                            Container(
-                              height: 45,
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30.0),
-                                border: Border.all(
-                                  color: Colors.green[900]!,
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: TextField(
-                                controller: birthAdd,
-                                textCapitalization: TextCapitalization.words,
-                                decoration: InputDecoration(
-                                  hintText: 'MM/DD/YYYY',
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                            //Date of Death
-                            SizedBox(height: 5),
-                            Row(
-                              children: [
-                                '  Date of Death'
-                                    .text
-                                    .color(Colors.green[900])
-                                    .semiBold
-                                    .make()
-                              ],
-                            ),
-                            Container(
-                              height: 45,
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30.0),
-                                border: Border.all(
-                                  color: Colors.green[900]!,
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: TextField(
-                                controller: deathAdd,
-                                textCapitalization: TextCapitalization.words,
-                                decoration: InputDecoration(
-                                  hintText: 'MM/DD/YYYY',
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            SizedBox(
-                              width: 200,
-                              height: 40,
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  setState(() {
-                                    _name =
-                                        '${firstNameAdd.text} ${middleNameAdd.text} ${lastNameAdd.text} ${nameExtensionAdd.text}';
-                                  });
-                                  await checkName();
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return ConfirmPasswordDialog();
-                                    },
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF265630),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(30))),
-                                child: "Add"
-                                    .text
-                                    .size(20)
-                                    .light
-                                    .color(Colors.white)
-                                    .make(),
-                              ),
-                            ),
-                            SizedBox(height: 30),
-                          ],
+                          ),
+                        ],
+                      ),
+                      userLat == 9.2458347 && userLong == 118.401804 ? SizedBox() : Row(children: [Icon(Icons.check_circle,
+                        color: Colors.green,), '$userLat , $userLong'.text.size(10).make(),
+                      ],),
+                      SizedBox(height: 10),
+                      //Last name
+                      Row(
+                        children: [
+                          '  Last Name'
+                              .text
+                              .color(Colors.green[900])
+                              .semiBold
+                              .make()
+                        ],
+                      ),
+                      Container(
+                        height: 45,
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(
+                            color: Colors.green[900]!,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: lastNameAdd,
+                          textCapitalization: TextCapitalization.words,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                          ),
                         ),
                       ),
-                    ),
+                      //First name
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          '  First Name'
+                              .text
+                              .color(Colors.green[900])
+                              .semiBold
+                              .make()
+                        ],
+                      ),
+                      Container(
+                        height: 45,
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(
+                            color: Colors.green[900]!,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: firstNameAdd,
+                          textCapitalization: TextCapitalization.words,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      //Middle name
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          '  Middle Name'
+                              .text
+                              .color(Colors.green[900])
+                              .semiBold
+                              .make()
+                        ],
+                      ),
+                      Container(
+                        height: 45,
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(
+                            color: Colors.green[900]!,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: middleNameAdd,
+                          textCapitalization: TextCapitalization.words,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      //Name extension
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          '  Name Extension'
+                              .text
+                              .color(Colors.green[900])
+                              .semiBold
+                              .make()
+                        ],
+                      ),
+                      Container(
+                        height: 45,
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(
+                            color: Colors.green[900]!,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: TextField(
+                          textCapitalization: TextCapitalization.words,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      //Date of Birth
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          '  Date of Birth'
+                              .text
+                              .color(Colors.green[900])
+                              .semiBold
+                              .make()
+                        ],
+                      ),
+                      Container(
+                        height: 45,
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(
+                            color: Colors.green[900]!,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: birthAdd,
+                          keyboardType: TextInputType.emailAddress,
+                          textCapitalization: TextCapitalization.words,
+                          decoration: InputDecoration(
+                            hintText: 'MM/DD/YYYY',
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      //Date of Death
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          '  Date of Death'
+                              .text
+                              .color(Colors.green[900])
+                              .semiBold
+                              .make()
+                        ],
+                      ),
+                      Container(
+                        height: 45,
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(
+                            color: Colors.green[900]!,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: TextField(
+                          keyboardType: TextInputType.emailAddress,
+                          controller: deathAdd,
+                          textCapitalization: TextCapitalization.words,
+                          decoration: InputDecoration(
+                            hintText: 'MM/DD/YYYY',
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      SizedBox(
+                        width: 200,
+                        height: 40,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            setState(() {
+                              _name =
+                              '${firstNameAdd.text} ${middleNameAdd
+                                  .text} ${lastNameAdd.text} ${nameExtensionAdd
+                                  .text}';
+                            });
+                            await checkName();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ConfirmPasswordDialog();
+                              },
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF265630),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(30))),
+                          child: "Add"
+                              .text
+                              .size(20)
+                              .light
+                              .color(Colors.white)
+                              .make(),
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          );
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -697,7 +709,7 @@ class _ConfirmPasswordDialogState extends State<ConfirmPasswordDialog> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
+                            saveLoading ? "".text.make() : Container(
                               width: 240,
                               height: 40,
                               padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -725,7 +737,7 @@ class _ConfirmPasswordDialogState extends State<ConfirmPasswordDialog> {
                     ),
                   ),
                   // Second Container with a circular icon
-                  Positioned(
+                  saveLoading ? "".text.make() : Positioned(
                     top: 0,
                     // Adjust this value to position it as desired
                     right: 0,
@@ -768,15 +780,28 @@ class _ConfirmPasswordDialogState extends State<ConfirmPasswordDialog> {
             SizedBox(height: 20),
             SizedBox(
               width: 100,
-              child: ElevatedButton(
+              child: saveLoading ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  'Uploading...'.text.color(Colors.green[900]).make(),
+                ],
+              ) : ElevatedButton(
                 onPressed: () async {
+                  if ( userLat == 9.2458347 || userLong == 118.401804 || _passwordController.text.isEmpty || firstNameAdd.text.isEmpty || lastNameAdd.text.isEmpty || _image2 == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Please complete all fields and select an image.')),
+                    );
+                    return; // Stop execution if validation fails
+                  }
+
                   if (_passwordController.text == pass) {
                     setState(() {
                       saveLoading = true;
                     });
                     String? url;
                     String? _fullname =
-                        '${firstNameAdd.text} ${middleNameAdd.text} ${lastNameAdd.text} ${nameExtensionAdd.text}';
+                        '${firstNameAdd.text} ${middleNameAdd
+                        .text} ${lastNameAdd.text} ${nameExtensionAdd.text}';
                     try {
                       final ref = FirebaseStorage.instance
                           .ref()
@@ -799,9 +824,19 @@ class _ConfirmPasswordDialogState extends State<ConfirmPasswordDialog> {
                         'Location': '$userLat, $userLong',
                         'image': url,
                       });
+                      firstNameAdd.clear();
+                      middleNameAdd.clear();
+                      lastNameAdd.clear();
+                      nameExtensionAdd.clear();
+                      birthAdd.clear();
+                      deathAdd.clear();
+                      _image2 = null;
+                      userLat = 9.2458347;
+                      userLong = 118.401804;
                       setState(() {
                         saveLoading = false;
                       });
+                      Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             backgroundColor: Colors.green[900],

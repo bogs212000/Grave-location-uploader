@@ -37,7 +37,10 @@ class _PickLocationState extends State<PickLocation> {
       userLong = cam.longitude;
     });
     print('${userLat}, ${userLong}');
-    Navigator.pop(context);
+    Navigator.pushNamed(
+      context,
+      '/add',
+    );
   }
 
   @override
@@ -47,7 +50,7 @@ class _PickLocationState extends State<PickLocation> {
         foregroundColor: Colors.black,
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text('Change'),
+        title: Text('Map'),
       ),
       body: Container(
         height: double.infinity,
